@@ -23,7 +23,7 @@ def read_item(item_id: int, q: Optional[str] = None):
     return {"item_id": item_id, "q": q}
 
 @app.get("/votes/{voter_id}")
-async def get_votes(voter_id: string):
+async def get_votes(voter_id: str):
     # Create a new session
     db = SessionLocal()
     # Retrieve the user from the database using the user_id
