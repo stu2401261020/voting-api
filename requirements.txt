@@ -1,4 +1,3 @@
 fastapi[all]
 sqlalchemy[all]
 psycopg2
-asyncpg
