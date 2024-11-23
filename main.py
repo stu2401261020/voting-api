@@ -23,12 +23,16 @@ class VoteRegistration(Base):
     
     vote_registration_id = Column(String, primary_key=True, index=True)
 
-# Define the Vote model
+# Define the Vote model with a composite primary key
 class Vote(Base):
     __tablename__ = "votes"
     
     vote_registration_id = Column(String, index=True)
     answer = Column(String)
+
+    __table_args__ = (
+        PrimaryKeyConstraint('vote_registration_id', 'answer'),
+    )
 
 # Pydantic models for request bodies
 class VoteRegistrationCreate(BaseModel):
