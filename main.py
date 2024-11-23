@@ -15,7 +15,7 @@ app = FastAPI()
 
 # SQLAlchemy setup
 Base = declarative_base()
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(database_url, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Define the Votes model
