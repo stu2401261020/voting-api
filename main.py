@@ -1,11 +1,9 @@
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy import create_engine, Column, String, select
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.future import select
-from sqlalchemy import Column, String
+from sqlalchemy.orm import sessionmaker, Session
 import os
 
 # Define the database URL and create the SQLAlchemy engine
@@ -16,8 +14,8 @@ app = FastAPI()
 
 # SQLAlchemy setup
 Base = declarative_base()
-engine = create_async_engine(DATABASE_URL, echo=True)
-AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+engine = create_engine(DATABASE_URL, echo=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Define the Votes model
 class Vote(Base):
@@ -25,16 +23,18 @@ class Vote(Base):
     
     vote_registration_id = Column(String, primary_key=True, index=True)
     answer = Column(String)
-
 # Dependency to get the database session
-async def get_db() -> AsyncSession:
-    async with AsyncSessionLocal() as session:
-        yield session
+def get_db() -> Session:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # Route to get answers by vote_registration_id
 @app.get("/answers/{vote_registration_id}")
-async def read_answers(vote_registration_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Vote.answer).where(Vote.vote_registration_id == vote_registration_id))
+def read_answers(vote_registration_id: str, db: Session = Depends(get_db)):
+    result = db.execute(select(Vote.answer).where(Vote.vote_registration_id == vote_registration_id))
     answers = result.scalars().all()
     
     if not answers:
