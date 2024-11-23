@@ -14,6 +14,12 @@ engine = create_engine(database_url)
 # Create a session factory using the engine
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
+class votes(Base):
+    __tablename__ = 'vote_registrations'
+    vote_registration_id = Column(String, primary_key=True)
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -27,7 +33,7 @@ async def get_votes(voter_id: str):
     # Create a new session
     db = SessionLocal()
     # Retrieve the user from the database using the user_id
-    vote = db.query(vote_registrations).filter(vote_registrations.vote_registration_id == voter_id).first()
+    vote = db.query(votes).filter(votes.vote_registration_id == voter_id).first()
     # Close the session
     db.close()
     return {"vote": vote}
