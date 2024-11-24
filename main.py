@@ -76,4 +76,4 @@ def read_answers(vote_registration_id: str, db: Session = Depends(get_db)):
     if not answers:
         raise HTTPException(status_code=404, detail="No answers found for this vote_registration_id")
     
-    return {"answers": answers}
+    return answers
