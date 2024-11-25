@@ -38,12 +38,9 @@ class Vote(Base):
     vote_registration = relationship("VoteRegistration", back_populates="votes")
 
 # Pydantic models for request bodies
-class VoteCreate(BaseModel):
-    answer: str
-
 class VoteRegistrationWithVotesCreate(BaseModel):
     vote_registration_id: str
-    votes: List[VoteCreate]
+    votes: List[str]  # Change to a list of strings
 
 # Dependency to get the database session
 def get_db() -> Session:
@@ -64,8 +61,8 @@ def create_votes(vote_registration_with_votes: VoteRegistrationWithVotesCreate, 
 
     # Create the Votes
     db_votes = [
-        Vote(vote_registration_id=db_vote_registration.vote_registration_id, answer=vote.answer)
-        for vote in vote_registration_with_votes.votes
+        Vote(vote_registration_id=db_vote_registration.vote_registration_id, answer=answer)
+        for answer in vote_registration_with_votes.votes
     ]
     db.add_all(db_votes)
     db.commit()
