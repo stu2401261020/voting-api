@@ -68,3 +68,14 @@ def create_votes(vote_registration_with_votes: VoteRegistrationWithVotesCreate, 
     db.commit()
 
     return vote_registration_with_votes
+
+# Route to get answers by vote_registration_id
+@app.get("/answers/{vote_registration_id}")
+def read_answers(vote_registration_id: str, db: Session = Depends(get_db)):
+    result = db.execute(select(Vote.answer).where(Vote.vote_registration_id == vote_registration_id))
+    answers = result.scalars().all()
+    
+    if not answers:
+        raise HTTPException(status_code=404, detail="No answers found for this vote_registration_id")
+    
+    return answers
